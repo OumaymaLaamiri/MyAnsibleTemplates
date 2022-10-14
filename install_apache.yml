@@ -1,0 +1,18 @@
+---
+- hosts: all
+  become: true 
+  tasks:
+
+  - name: Update packages
+    apt:
+      update_cache: yes
+
+  - name: add php support for appache
+    apt:
+      name: libapache2-mod-php
+      state: latest 
+
+  - name: install apache2 package
+    apt:
+      name: apache2
+      state: latest

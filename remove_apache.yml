@@ -1,0 +1,18 @@
+---
+- hosts: all
+  become: true 
+  tasks:
+
+  - name: Update packages
+    apt:
+      update_cache: yes
+
+  - name: remove php support for appache
+    apt:
+      name: libapache2-mod-php
+      state: absent 
+
+  - name: desinstall apache2 package
+    apt:
+      name: apache2
+      state: absent
