@@ -6,3 +6,6 @@
 
 [db_server]
 172.17.5.1 
+
+[workstation]
+172.17.4.3

@@ -10,6 +10,19 @@
       update_cache: yes
     when: ansible_distribution == "Ubuntu"
 
+- hosts: workstation
+  become: true
+  tasks:
+
+  - name: install terraform in local
+    unarchive:
+       src: https://releases.hashicorp.com/terraform/1.3.3/terraform_1.3.3_linux_arm64.zip
+       dest: /usr/local/bin
+       remote_src: yes
+       mode: 0755
+       owner: root
+       group: root
+
 - hosts: web_servers
   become: true 
   tasks:
@@ -21,15 +34,38 @@
         - apache2
         - libapache2-mod-php
       state: latest
- 
-  - name: copy files 
-    tags: copyfile 
+
+  - name: start apache2 
+    tags: apache
+    service:
+      name: apache2
+      state: started
+      enabled: yes
+
+  - name: copy files
+    tags: copyfile
     copy:
       src: default_site.html
       dest: /var/www/html/index.html
       owner: root
       group: root
       mode: 0644
+
+
+  - name: update the index.html 
+    tags: apache
+    lineinfile:
+        path: /var/www/html/index.html
+        regexp: '^<p>'
+        line: <p>Ansible is easy!</p>
+    register: mpm
+  
+  - name: restart apache
+    tags: apache
+    service: 
+       name: apache2
+       state: restarted
+    when: mpm.changed
 
 - hosts: db_server
   become: true 
